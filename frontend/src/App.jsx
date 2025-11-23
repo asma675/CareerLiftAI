@@ -208,9 +208,9 @@ const uploadResumeFile = async (file, careerGoal) => {
   return result;
 };
 
-// Fetch live courses/opportunities from backend (/api/courses)
+// Fetch live courses/opportunities from backend (/api/courses/external)
 const fetchLearningResources = async (role, skills = []) => {
-  const response = await fetch('/api/courses', {
+  const response = await fetch('/api/courses/external', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ role, skills })

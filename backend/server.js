@@ -173,7 +173,7 @@ app.post('/api/upload-resume', upload.single('file'), async (req, res) => {
   }
 });
 
-app.post('/api/courses', async (req, res) => {
+app.post('/api/courses/external', async (req, res) => {
   try {
     const { role, skills } = req.body || {};
 
