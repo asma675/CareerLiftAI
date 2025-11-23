@@ -1,0 +1,43 @@
+# Node dependencies
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Build
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editor and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Google Cloud / credentials
+# service account keys and local credentials
+*service-account*.json
+*-key.json
+google-credentials.json
+.gcloud/
+credentials
+
+# Terraform
+.terraform/
+
+# Coverage
+coverage/
