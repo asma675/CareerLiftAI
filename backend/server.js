@@ -3,6 +3,8 @@ const cors = require('cors');
 const axios = require('axios');
 const dotenv = require('dotenv');
 const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
 
 dotenv.config();
@@ -19,6 +21,22 @@ if (!GEMINI_API_KEY) {
 
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
+
+// Ensure upload directory exists and configure multer storage
+const UPLOAD_DIR = path.join(__dirname, 'uploads');
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, UPLOAD_DIR);
+  },
+  filename: function (req, file, cb) {
+    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, `${unique}-${file.originalname}`);
+  }
+});
+
+const upload = multer({ storage });
 
 // Define the structured JSON schema for the AI output
 const ANALYSIS_SCHEMA = {
