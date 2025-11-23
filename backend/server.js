@@ -21,9 +21,6 @@ const PORT = process.env.PORT || 4000;
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash-preview-09-2025';
-const GCP_PROJECT = process.env.GCP_PROJECT;
-const GCP_LOCATION = process.env.GCP_LOCATION || 'us-central1';
-const VERTEX_DATA_STORE_ID = process.env.VERTEX_DATA_STORE_ID;
 const VERTEX_API_KEY = process.env.VERTEX_API_KEY;
 
 if (!GEMINI_API_KEY) {
@@ -96,10 +93,9 @@ const geminiClient = new GeminiClient({
   learningSchema: LEARNING_SCHEMA
 });
 const vertexSearch = new VertexCourseSearch({
-  projectId: GCP_PROJECT,
-  location: GCP_LOCATION,
-  dataStoreId: VERTEX_DATA_STORE_ID,
-  apiKey: VERTEX_API_KEY
+  apiKey: VERTEX_API_KEY,
+  model: process.env.VERTEX_MODEL || 'gemini-2.5-flash-lite',
+  schema: LEARNING_SCHEMA
 });
 
 const upload = multer({
@@ -173,7 +169,7 @@ app.post('/api/upload-resume', upload.single('file'), async (req, res) => {
   }
 });
 
-app.post('/api/courses', async (req, res) => {
+app.post('/api/courses/external', async (req, res) => {
   try {
     const { role, skills } = req.body || {};
 
@@ -188,9 +184,13 @@ app.post('/api/courses', async (req, res) => {
     let sources = [];
     let usedVertex = false;
 
+    let vertexResult = null;
+
     if (vertexSearch.isEnabled()) {
       try {
-        courses = await vertexSearch.searchCourses({ query: role, skills: Array.isArray(skills) ? skills : [skillsText] });
+        vertexResult = await vertexSearch.searchCourses({ role, skills: Array.isArray(skills) ? skills : [skillsText] });
+        courses = vertexResult.courses || [];
+        sources = vertexResult.sources || [];
         usedVertex = true;
         console.log(`[courses] vertex results=${courses.length}`);
       } catch (err) {
@@ -214,7 +214,7 @@ app.post('/api/courses', async (req, res) => {
       sources = discovery.sources || [];
     }
 
-    const opportunities = mapStaticRecommendationsToLearning().opportunities; // keep static for now
+    const opportunities = usedVertex ? (vertexResult?.opportunities || []) : mapStaticRecommendationsToLearning().opportunities;
 
     console.log(`[courses] success role="${role}" courses=${courses.length} opportunities=${opportunities.length} usedVertex=${usedVertex}`);
     return res.json({
