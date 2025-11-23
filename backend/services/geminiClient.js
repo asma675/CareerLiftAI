@@ -147,7 +147,7 @@ class GeminiClient {
     };
   }
 
-  async structureLearningResources(discoveryText) {
+  async structureLearningResources(discoveryText, discoverySources = []) {
     if (!discoveryText) {
       throw new Error('discoveryText is required to structure learning resources.');
     }
@@ -157,10 +157,10 @@ class GeminiClient {
 
     this.ensureConfigured();
 
-    const prompt = `You will receive a bullet list of courses and opportunities gathered from the web. Convert it into a strict JSON object with two arrays: "courses" and "opportunities". Each course item must include title, provider, link, and optionally cost, duration, level. Each opportunity item must include name, link, and optionally description, difficulty. Do not invent items; only structure what is provided. If a field is missing, omit it rather than guessing.`;
+    const prompt = `You will receive a bullet list of courses and opportunities gathered from the web plus a list of source URLs. Convert it into a strict JSON object with two arrays: "courses" and "opportunities". Each course item must include title, provider, link (real URL), and optionally cost, duration, level. Each opportunity item must include name, link (real URL), and optionally description, difficulty. Prefer links provided in the source list; otherwise use the URL mentioned in the bullet text. Do not invent items; only structure what is provided. If a field is missing, omit it rather than guessing.`;
 
     const payload = {
-      contents: [{ parts: [{ text: `${prompt}\n\n${discoveryText}` }] }],
+      contents: [{ parts: [{ text: `${prompt}\n\nSources:\n${JSON.stringify(discoverySources)}\n\nContent:\n${discoveryText}` }] }],
       generationConfig: {
         responseMimeType: "application/json",
         responseSchema: this.learningSchema

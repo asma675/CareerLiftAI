@@ -10,6 +10,7 @@ const ANALYSIS_SCHEMA = require('./constants/analysisSchema');
 const LEARNING_SCHEMA = require('./constants/learningSchema');
 const RECOMMENDATIONS_DB = require('./data/recommendations');
 const { cleanupFile } = require('./utils/fileUtils');
+const VertexCourseSearch = require('./services/vertexSearch');
 
 dotenv.config();
 
@@ -20,6 +21,10 @@ const PORT = process.env.PORT || 4000;
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash-preview-09-2025';
+const GCP_PROJECT = process.env.GCP_PROJECT;
+const GCP_LOCATION = process.env.GCP_LOCATION || 'us-central1';
+const VERTEX_DATA_STORE_ID = process.env.VERTEX_DATA_STORE_ID;
+const VERTEX_API_KEY = process.env.VERTEX_API_KEY;
 
 if (!GEMINI_API_KEY) {
   console.warn('Warning: GEMINI_API_KEY is not set. The /api/analyze endpoint will fail until you add it to your .env file.');
@@ -50,6 +55,35 @@ const logError = (context, error) => {
   console.error(`[${context}] error:`, details);
 };
 
+const ALLOWED_DOMAINS = [
+  'coursera.org',
+  'udemy.com',
+  'grow.google',
+  'google.com',
+  'skillbuilder.aws',
+  'aws.amazon.com',
+  'edx.org',
+  'linkedin.com',
+  'kaggle.com',
+  'mlh.io',
+  'hackthebox.com'
+];
+
+const isAllowedDomain = (url) => {
+  try {
+    const host = new URL(url).host;
+    return ALLOWED_DOMAINS.some((d) => host.endsWith(d));
+  } catch {
+    return false;
+  }
+};
+
+const chooseLink = (candidateLink, sources = []) => {
+  if (candidateLink && isAllowedDomain(candidateLink)) return candidateLink;
+  const fromSources = sources.find((s) => s?.uri && isAllowedDomain(s.uri));
+  return fromSources ? fromSources.uri : null;
+};
+
 // --- Middleware ---
 
 app.use(cors());
@@ -60,6 +94,12 @@ const geminiClient = new GeminiClient({
   model: GEMINI_MODEL,
   schema: ANALYSIS_SCHEMA,
   learningSchema: LEARNING_SCHEMA
+});
+const vertexSearch = new VertexCourseSearch({
+  projectId: GCP_PROJECT,
+  location: GCP_LOCATION,
+  dataStoreId: VERTEX_DATA_STORE_ID,
+  apiKey: VERTEX_API_KEY
 });
 
 const upload = multer({
@@ -144,16 +184,47 @@ app.post('/api/courses', async (req, res) => {
     const skillsText = Array.isArray(skills) ? skills.join(', ') : (skills || '');
 
     console.log(`[courses] role="${role}" skills="${skillsText}"`);
-    const discovery = await geminiClient.discoverLearningResources(role, skillsText);
-    const structured = await geminiClient.structureLearningResources(discovery.text);
+    let courses = [];
+    let sources = [];
+    let usedVertex = false;
 
-    console.log(`[courses] success role="${role}" courses=${structured.courses?.length || 0} opportunities=${structured.opportunities?.length || 0}`);
+    if (vertexSearch.isEnabled()) {
+      try {
+        courses = await vertexSearch.searchCourses({ query: role, skills: Array.isArray(skills) ? skills : [skillsText] });
+        usedVertex = true;
+        console.log(`[courses] vertex results=${courses.length}`);
+      } catch (err) {
+        logError('courses-vertex', err);
+      }
+    }
+
+    // If Vertex failed or returned nothing, fall back to Gemini + static sanitizer.
+    if (!courses.length) {
+      const discovery = await geminiClient.discoverLearningResources(role, skillsText);
+      const structured = await geminiClient.structureLearningResources(discovery.text, discovery.sources);
+
+      const sanitizedCourses = (structured.courses || [])
+        .map((c) => ({
+          ...c,
+          link: chooseLink(c.link, discovery.sources)
+        }))
+        .filter((c) => !!c.link);
+
+      courses = sanitizedCourses.length ? sanitizedCourses : mapStaticRecommendationsToLearning().courses;
+      sources = discovery.sources || [];
+    }
+
+    const opportunities = mapStaticRecommendationsToLearning().opportunities; // keep static for now
+
+    console.log(`[courses] success role="${role}" courses=${courses.length} opportunities=${opportunities.length} usedVertex=${usedVertex}`);
     return res.json({
       role,
       skills: skillsText,
-      courses: structured.courses || [],
-      opportunities: structured.opportunities || [],
-      sources: discovery.sources || []
+      courses,
+      opportunities,
+      sources,
+      usedVertex,
+      fallback: !usedVertex && !sources.length
     });
   } catch (error) {
     logError('courses', error);
