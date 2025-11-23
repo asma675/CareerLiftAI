@@ -265,6 +265,74 @@ app.get('/', (req, res) => {
   res.send('CareerLift AI backend is running.');
 });
 
+// ======================== COURSE MANAGEMENT ========================
+
+// In-memory database
+let courses = [];
+let nextCourseId = 1;
+
+// CREATE COURSE
+app.post("/api/courses", (req, res) => {
+    const { title, category, level, description, url, createdBy } = req.body;
+
+    if (!title || !category || !level) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const newCourse = {
+        id: nextCourseId++,
+        title,
+        category,
+        level,
+        description,
+        url,
+        createdBy,
+        createdAt: new Date().toISOString()
+    };
+
+    courses.push(newCourse);
+    res.json({ message: "Course created successfully", course: newCourse });
+});
+
+// GET ALL COURSES
+app.get("/api/courses", (req, res) => {
+    res.json(courses);
+});
+
+// UPDATE COURSE
+app.put("/api/courses/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const course = courses.find((c) => c.id === id);
+
+    if (!course) {
+        return res.status(404).json({ error: "Course not found" });
+    }
+
+    const { title, category, level, description, url } = req.body;
+
+    if (title) course.title = title;
+    if (category) course.category = category;
+    if (level) course.level = level;
+    if (description) course.description = description;
+    if (url) course.url = url;
+
+    res.json({ message: "Course updated successfully", course });
+});
+
+// DELETE COURSE
+app.delete("/api/courses/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+
+    const exists = courses.some((c) => c.id === id);
+    if (!exists) {
+        return res.status(404).json({ error: "Course not found" });
+    }
+
+    courses = courses.filter((c) => c.id !== id);
+    res.json({ message: "Course deleted successfully", id });
+});
+
+
 app.listen(PORT, () => {
   console.log(`CareerLift AI backend listening on port ${PORT}`);
 });
