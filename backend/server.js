@@ -21,9 +21,6 @@ const PORT = process.env.PORT || 4000;
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash-preview-09-2025';
-const GCP_PROJECT = process.env.GCP_PROJECT;
-const GCP_LOCATION = process.env.GCP_LOCATION || 'us-central1';
-const VERTEX_DATA_STORE_ID = process.env.VERTEX_DATA_STORE_ID;
 const VERTEX_API_KEY = process.env.VERTEX_API_KEY;
 
 if (!GEMINI_API_KEY) {
@@ -96,10 +93,9 @@ const geminiClient = new GeminiClient({
   learningSchema: LEARNING_SCHEMA
 });
 const vertexSearch = new VertexCourseSearch({
-  projectId: GCP_PROJECT,
-  location: GCP_LOCATION,
-  dataStoreId: VERTEX_DATA_STORE_ID,
-  apiKey: VERTEX_API_KEY
+  apiKey: VERTEX_API_KEY,
+  model: process.env.VERTEX_MODEL || 'gemini-2.5-flash-lite',
+  schema: LEARNING_SCHEMA
 });
 
 const upload = multer({
@@ -188,9 +184,13 @@ app.post('/api/courses/external', async (req, res) => {
     let sources = [];
     let usedVertex = false;
 
+    let vertexResult = null;
+
     if (vertexSearch.isEnabled()) {
       try {
-        courses = await vertexSearch.searchCourses({ query: role, skills: Array.isArray(skills) ? skills : [skillsText] });
+        vertexResult = await vertexSearch.searchCourses({ role, skills: Array.isArray(skills) ? skills : [skillsText] });
+        courses = vertexResult.courses || [];
+        sources = vertexResult.sources || [];
         usedVertex = true;
         console.log(`[courses] vertex results=${courses.length}`);
       } catch (err) {
@@ -214,7 +214,7 @@ app.post('/api/courses/external', async (req, res) => {
       sources = discovery.sources || [];
     }
 
-    const opportunities = mapStaticRecommendationsToLearning().opportunities; // keep static for now
+    const opportunities = usedVertex ? (vertexResult?.opportunities || []) : mapStaticRecommendationsToLearning().opportunities;
 
     console.log(`[courses] success role="${role}" courses=${courses.length} opportunities=${opportunities.length} usedVertex=${usedVertex}`);
     return res.json({
@@ -258,74 +258,6 @@ app.get('/api/recommendations/details', (req, res) => {
 app.get('/', (_req, res) => {
   res.send('CareerLift AI backend is running.');
 });
-
-// ======================== COURSE MANAGEMENT ========================
-
-// In-memory database
-let courses = [];
-let nextCourseId = 1;
-
-// CREATE COURSE
-app.post("/api/courses", (req, res) => {
-    const { title, category, level, description, url, createdBy } = req.body;
-
-    if (!title || !category || !level) {
-        return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    const newCourse = {
-        id: nextCourseId++,
-        title,
-        category,
-        level,
-        description,
-        url,
-        createdBy,
-        createdAt: new Date().toISOString()
-    };
-
-    courses.push(newCourse);
-    res.json({ message: "Course created successfully", course: newCourse });
-});
-
-// GET ALL COURSES
-app.get("/api/courses", (req, res) => {
-    res.json(courses);
-});
-
-// UPDATE COURSE
-app.put("/api/courses/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    const course = courses.find((c) => c.id === id);
-
-    if (!course) {
-        return res.status(404).json({ error: "Course not found" });
-    }
-
-    const { title, category, level, description, url } = req.body;
-
-    if (title) course.title = title;
-    if (category) course.category = category;
-    if (level) course.level = level;
-    if (description) course.description = description;
-    if (url) course.url = url;
-
-    res.json({ message: "Course updated successfully", course });
-});
-
-// DELETE COURSE
-app.delete("/api/courses/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-
-    const exists = courses.some((c) => c.id === id);
-    if (!exists) {
-        return res.status(404).json({ error: "Course not found" });
-    }
-
-    courses = courses.filter((c) => c.id !== id);
-    res.json({ message: "Course deleted successfully", id });
-});
-
 
 app.listen(PORT, () => {
   console.log(`CareerLift AI backend listening on port ${PORT}`);
