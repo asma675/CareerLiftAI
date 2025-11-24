@@ -1,0 +1,163 @@
+@import "../theme.scss";
+
+.upload-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.25rem;
+}
+
+.upload-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .upload-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.upload-card {
+  height: 100%;
+}
+
+.muted {
+  color: rgba(224, 231, 255, 0.8);
+  margin-bottom: 0.75rem;
+}
+
+.muted.small {
+  font-size: 0.9rem;
+}
+
+.upload-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .upload-actions {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.file-input {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-primary);
+}
+
+.file-name {
+  font-size: 0.85rem;
+  color: rgba(226, 232, 240, 0.9);
+  margin-bottom: 0.5rem;
+}
+
+.alert {
+  padding: 0.75rem;
+  border-radius: 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.alert-error {
+  background: rgba(127, 29, 29, 0.35);
+  color: #fecdd3;
+  border: 1px solid rgba(239, 68, 68, 0.6);
+}
+
+.resume-input {
+  height: 16rem;
+  resize: vertical;
+  font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+}
+
+.goal-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.field-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.custom-goal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.goal-actions {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(168, 85, 247, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.progress {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 0.75rem;
+  padding: 0.4rem;
+  border: 1px solid rgba(103, 232, 249, 0.35);
+}
+
+.progress__bar {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #67e8f9, #3b82f6);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.progress__text {
+  font-size: 0.85rem;
+  color: rgba(224, 231, 255, 0.9);
+  margin-top: 0.35rem;
+}
+
+.analyze-btn {
+  width: 100%;
+}
+
+.icon-sm {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.35rem;
+  animation: spin 1s linear infinite;
+}
+
+.icon-md {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.5;
+    transform: scaleX(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0.5;
+    transform: scaleX(0.95);
+  }
+}

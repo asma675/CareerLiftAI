@@ -1,0 +1,105 @@
+@import "../theme.scss";
+
+.jobs-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.25rem;
+}
+
+.jobs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.jobs-card {
+  height: 100%;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.75rem;
+  align-items: end;
+  margin-bottom: 0.5rem;
+}
+
+.filter-action {
+  display: flex;
+  align-items: flex-end;
+}
+
+.jobs-list {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.job-meta {
+  color: rgba(224, 231, 255, 0.85);
+  font-size: 0.95rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.meta-label {
+  color: var(--accent-cyan);
+  font-weight: 700;
+}
+
+.muted {
+  color: rgba(224, 231, 255, 0.8);
+}
+
+.muted.small {
+  font-size: 0.9rem;
+}
+
+.alert {
+  padding: 0.75rem;
+  border-radius: 0.9rem;
+  font-weight: 600;
+}
+
+.alert-error {
+  background: rgba(127, 29, 29, 0.35);
+  color: #fecdd3;
+  border: 1px solid rgba(239, 68, 68, 0.6);
+}
+
+.progress {
+  height: 10px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(103, 232, 249, 0.35);
+}
+
+.progress__bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #67e8f9, #3b82f6);
+  animation: shimmer 1.3s ease-in-out infinite;
+}
+
+.warning {
+  color: #fca5a5;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-10%);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateX(5%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 0.75;
+  }
+}

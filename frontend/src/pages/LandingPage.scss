@@ -1,0 +1,37 @@
+@use "../theme.scss";
+
+.landing {
+  padding: clamp(1.5rem, 4vw, 3rem);
+  text-align: center;
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.7), rgba(17, 24, 39, 0.9));
+  margin: 1.5rem;
+  border-radius: 1.75rem;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(14px);
+}
+
+.landing__icon {
+  width: 4rem;
+  height: 4rem;
+  color: var(--accent-yellow);
+  margin: 0 auto 1.25rem;
+}
+
+.landing__lede {
+  margin: 1rem auto 0.5rem;
+  color: rgba(236, 239, 244, 0.9);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  max-width: 720px;
+}
+
+.landing__sdg {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: rgba(196, 181, 253, 0.8);
+}
+
+.landing__cta {
+  margin-top: 1.5rem;
+  padding-inline: 2.5rem;
+}

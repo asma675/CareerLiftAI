@@ -1,0 +1,134 @@
+@import "../theme.scss";
+
+.recommendations-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.25rem;
+}
+
+.rec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.list__item {
+  padding: 0.8rem 1rem;
+  border-radius: 0.9rem;
+  font-weight: 600;
+  border-left: 4px solid transparent;
+}
+
+.list__item--gold {
+  background: rgba(202, 138, 4, 0.2);
+  color: #fef3c7;
+  border-color: rgba(251, 191, 36, 0.8);
+}
+
+.list__item--blue {
+  background: rgba(30, 64, 175, 0.35);
+  color: #bfdbfe;
+  border-color: rgba(59, 130, 246, 0.8);
+}
+
+.muted {
+  color: rgba(224, 231, 255, 0.85);
+}
+
+.muted.small {
+  font-size: 0.9rem;
+}
+
+.alert {
+  padding: 0.75rem;
+  border-radius: 0.9rem;
+  font-weight: 600;
+}
+
+.alert-error {
+  background: rgba(127, 29, 29, 0.35);
+  color: #fecdd3;
+  border: 1px solid rgba(239, 68, 68, 0.6);
+}
+
+.loading-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(224, 231, 255, 0.9);
+}
+
+.icon-sm {
+  width: 1rem;
+  height: 1rem;
+  animation: spin 1s linear infinite;
+}
+
+.resource-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.resource-card {
+  padding: 0.85rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--card-border);
+  background: var(--input-bg);
+}
+
+.resource-card__title {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.resource-card__meta {
+  font-size: 0.85rem;
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.resource-card__link {
+  font-size: 0.85rem;
+  color: var(--accent-cyan);
+  text-decoration: underline;
+}
+
+.sources {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.sources__item {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sources__link {
+  color: var(--accent-cyan);
+  text-decoration: underline;
+}
+
+.warning {
+  color: #fca5a5;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

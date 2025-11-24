@@ -1,0 +1,122 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+@import "./theme.scss";
+
+.app-shell {
+  min-height: 100vh;
+  background: linear-gradient(180deg, rgba(88, 28, 135, 0.6), rgba(2, 6, 23, 0.95), rgba(88, 28, 135, 0.6));
+  color: #e5e7eb;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: linear-gradient(90deg, rgba(88, 28, 135, 0.9), rgba(49, 46, 129, 0.9), rgba(0, 0, 0, 0.9));
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid rgba(122, 47, 192, 0.45);
+  backdrop-filter: blur(12px);
+}
+
+.app-header__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.brand__icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+  color: var(--accent-yellow);
+}
+
+.brand__text {
+  background: linear-gradient(90deg, #67e8f9, #c4b5fd, #f472b6);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.9rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.8);
+  border: 1px solid transparent;
+  background: transparent;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-link__icon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.4rem;
+}
+
+.nav-link__label {
+  display: inline;
+}
+
+.nav-link:hover {
+  color: #fff;
+  border-color: rgba(168, 85, 247, 0.5);
+  background: rgba(76, 29, 149, 0.25);
+}
+
+.nav-link--active {
+  background: linear-gradient(90deg, #67e8f9, #8b5cf6);
+  color: #0b1021;
+  box-shadow: 0 12px 30px rgba(132, 204, 255, 0.35);
+}
+
+.user-id-bar {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 0.35rem 1rem;
+  text-align: center;
+  font-size: 0.7rem;
+  color: #c4b5fd;
+  border-bottom: 1px solid rgba(88, 28, 135, 0.55);
+}
+
+.user-id-bar__id {
+  font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+  color: var(--accent-cyan);
+  word-break: break-all;
+}
+
+.main-content {
+  flex: 1;
+  padding: 1rem 1.25rem 1.5rem;
+}
+
+.app-footer {
+  background: rgba(0, 0, 0, 0.85);
+  color: #c4b5fd;
+  text-align: center;
+  font-size: 0.8rem;
+  padding: 1rem;
+  border-top: 1px solid rgba(88, 28, 135, 0.5);
+}
