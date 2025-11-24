@@ -1,4 +1,4 @@
-@import "../theme.scss";
+@use "../theme.scss";
 
 .landing {
   padding: clamp(1.5rem, 4vw, 3rem);

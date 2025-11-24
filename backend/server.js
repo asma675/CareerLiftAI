@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const morgan = require('morgan');
 
 const GeminiClient = require('./services/geminiClient');
 const ANALYSIS_SCHEMA = require('./constants/analysisSchema');
@@ -92,6 +93,7 @@ const chooseLink = (candidateLink, sources = []) => {
 
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
+app.use(morgan('dev'));
 
 const geminiClient = new GeminiClient({
   apiKey: GEMINI_API_KEY,
